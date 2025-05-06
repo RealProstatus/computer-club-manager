@@ -2,6 +2,7 @@
 
 #include<map>
 #include<deque>
+#include<algorithm>
 
 #include"Table.h"
 #include"Client.h"

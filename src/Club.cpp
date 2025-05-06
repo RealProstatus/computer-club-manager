@@ -39,10 +39,32 @@ void Club::logGenerated(const TTime& t, int id, const std::vector<std::string>& 
     eventLog.push_back(oss.str());
 }
 
-void Club::onClientArrive(const Event& e);
+void Club::onClientArrive(const Event& e) {
+    const auto& name = e.params[0];
+    if (clients.count(name))
+        throw AlreadyExistsException();      
+    if (e.time < openTime || e.time > closeTime)
+        throw NotOpenYetException();
+    clients.emplace(name, Client(name));
+}
 
 void Club::onClientSit(const Event& e);
 
-void Club::onClientWait(const Event& e);
+void Club::onClientWait(const Event& e) {
+    const auto& name = e.params[0];
+    if (!clients.count(name)) throw UnknownClientException();
+
+    bool anyFree = std::any_of(
+        tables.begin(), tables.end(), [](auto& t){ return t.isFree(); });
+    if (anyFree) throw CanWaitNoLongerException();
+
+    if (waitQ.size() >= (size_t)tableCount) {
+        logGenerated(e.time, 11, {name});
+        clients.erase(name);
+    } else {
+        clients.at(name).waitInQueue();
+        waitQ.push_back(name);
+    }
+}
 
 void Club::onClientLeave(const Event& e);
