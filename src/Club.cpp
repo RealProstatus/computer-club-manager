@@ -48,15 +48,39 @@ void Club::onClientArrive(const Event& e) {
     clients.emplace(name, Client(name));
 }
 
-void Club::onClientSit(const Event& e);
+void Club::onClientSit(const Event& e) {
+    const auto& name = e.params[0];
+    int idx = std::stoi(e.params[1]) - 1;
+
+    if(!clients.count(name))
+        throw UnknownClientException();
+    if(idx < 0 || idx >= tableCount)
+        throw PlaceIsBusyException();
+
+    auto& client = clients.at(name);
+    auto& table = tables[idx];
+    if (client.isSeated()) {
+        int prevIdx = client.getTable() - 1;
+        tables[prevIdx].clear(e.time, pricePerHour);
+        client.clearSeat();
+    }
+
+    if (!table.isFree()) 
+        throw PlaceIsBusyException();
+
+    table.occupy(name, e.time);
+    client.sit(idx+1, e.time);
+}
 
 void Club::onClientWait(const Event& e) {
     const auto& name = e.params[0];
-    if (!clients.count(name)) throw UnknownClientException();
+    if (!clients.count(name)) 
+        throw UnknownClientException();
 
     bool anyFree = std::any_of(
         tables.begin(), tables.end(), [](auto& t){ return t.isFree(); });
-    if (anyFree) throw CanWaitNoLongerException();
+    if (anyFree) 
+        throw CanWaitNoLongerException();
 
     if (waitQ.size() >= (size_t)tableCount) {
         logGenerated(e.time, 11, {name});
