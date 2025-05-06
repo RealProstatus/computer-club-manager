@@ -16,9 +16,6 @@ add_executable(ComputerClub
     ${CMAKE_SOURCE_DIR}/main.cpp
 )
 
-# Выводим список подключённых исходников (для отладки конфигурации)
-message(STATUS "Source files: ${SRC_FILES}")
-
 # Устанавливаем выводимый файл в корневую папку билда (по умолчанию build/)
 set_target_properties(ComputerClub PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}

@@ -13,24 +13,51 @@ void Parser::parse() {
     if(!std::getline(in,line))
         throw MissingConfigException("table amount");
     lineNum++;
-    tableCount = std::stoi(line);
+    try{
+        tableCount = std::stoi(line);
+    }
+    catch(std::exception& exc) {
+        throw ParsingException("FormatError at line 1");
+    }
+    
 
     if(!std::getline(in,line))
         throw MissingConfigException("work hours");
     lineNum++;
-    {
-        std::istringstream iss(line);
-        std::string ot, ct;
+    // разбиваем строку на токены
+    std::istringstream iss(line);
+    std::string ot, ct;
+    std::vector<std::string> tokens;
+    std::string tmp;
+    while (iss >> tmp) {
+        tokens.push_back(tmp);
+    }
 
-        iss >> ot >> ct;
-        openTime = TTime::parse(ot);
-        closeTime = TTime::parse(ct);
+    // ожидаем ровно два токена: время открытия и время закрытия
+    if (tokens.size() != 2) {
+        throw MissingConfigException("work hours");
+    }
+
+    // теперь проверяем формат каждого
+    try {
+        openTime  = TTime::parse(tokens[0]);
+        closeTime = TTime::parse(tokens[1]);
+    } catch (const BadTimeFormatException&) {
+        throw BadTimeFormatException();
+    } catch (const BadTimeValueException&) {
+        throw BadTimeValueException();
     }
 
     if(!std::getline(in,line))
         throw MissingConfigException("price");
     lineNum++;
-    price = std::stoi(line);
+    try{
+        price = std::stoi(line);
+    }
+    catch(std::exception& exc){
+        throw ParsingException("FormatError at line 3");
+    }
+    
 
     while(std::getline(in, line)) {
         lineNum++;
