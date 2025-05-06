@@ -12,10 +12,10 @@ class Club {
     TTime openTime, closeTime;
     int pricePerHour;
 
-    std::map<std::string, Client> clients_;
-    std::vector<Table> tables_;
-    std::deque<std::string> waitQ_;
-    std::vector<std::string> eventLog_;
+    std::map<std::string, Client> clients;
+    std::vector<Table> tables;
+    std::deque<std::string> waitQ;
+    std::vector<std::string> eventLog;
 
     void logEvent(const Event& e);
     void logGenerated(const TTime& t, int id, const std::vector<std::string>& params);
