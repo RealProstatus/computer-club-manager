@@ -20,3 +20,12 @@ public:
 };
 
 //__________________________________________________________________
+
+class BadTimeFormatException  : public ParsingException { 
+public: 
+    BadTimeFormatException()  : ParsingException("BadTimeFormat") {} 
+};
+class BadTimeValueException   : public ParsingException { 
+public: 
+    BadTimeValueException()   : ParsingException("BadTimeValue") {} 
+};
