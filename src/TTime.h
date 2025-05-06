@@ -30,7 +30,13 @@ struct Time {
         return std::string(buffer);
     }
 
-    bool operator<(const Time& other) const;
-    bool operator>(const Time& other) const;
-    bool operator==(const Time& other) const;
+    bool operator<(const Time& time) const {
+        return this->toMinutes() < time.toMinutes();
+    }
+    bool operator>(const Time& time) const {
+        return this->toMinutes() > time.toMinutes();
+    }
+    bool operator==(const Time& time) const {
+        return this->toMinutes() == time.toMinutes();
+    }
 };
