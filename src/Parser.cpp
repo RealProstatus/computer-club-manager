@@ -4,7 +4,7 @@ Parser::Parser(const std::string& fname): fileName(fname) {}
 
 void Parser::parse() {
     std::ifstream in(fileName);
-    if(!in)
+    if(!in.is_open())
         throw FileOpenException();
 
     std::string line;
