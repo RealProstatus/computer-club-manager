@@ -34,16 +34,16 @@ void Club::logEvent(const Event& e) {
 void Club::logGenerated(const TTime& t, int id, const std::vector<std::string>& params) {
     std::ostringstream oss;
     oss << t.toString() << ' ' << id;
-    for (auto& p : params) oss << ' ' << p;
+    for(auto& p : params) oss << ' ' << p;
 
     eventLog.push_back(oss.str());
 }
 
 void Club::onClientArrive(const Event& e) {
     const auto& name = e.params[0];
-    if (clients.count(name))
+    if(clients.count(name))
         throw AlreadyExistsException();      
-    if (e.time < openTime || e.time > closeTime)
+    if(e.time < openTime || e.time > closeTime)
         throw NotOpenYetException();
     clients.emplace(name, Client(name));
 }
@@ -59,13 +59,13 @@ void Club::onClientSit(const Event& e) {
 
     auto& client = clients.at(name);
     auto& table = tables[idx];
-    if (client.isSeated()) {
+    if(client.isSeated()) {
         int prevIdx = client.getTable() - 1;
         tables[prevIdx].clear(e.time, pricePerHour);
         client.clearSeat();
     }
 
-    if (!table.isFree()) 
+    if(!table.isFree()) 
         throw PlaceIsBusyException();
 
     table.occupy(name, e.time);
@@ -74,15 +74,15 @@ void Club::onClientSit(const Event& e) {
 
 void Club::onClientWait(const Event& e) {
     const auto& name = e.params[0];
-    if (!clients.count(name)) 
+    if(!clients.count(name)) 
         throw UnknownClientException();
 
     bool anyFree = std::any_of(
         tables.begin(), tables.end(), [](auto& t){ return t.isFree(); });
-    if (anyFree) 
+    if(anyFree) 
         throw CanWaitNoLongerException();
 
-    if (waitQ.size() >= (size_t)tableCount) {
+    if(waitQ.size() >= (size_t)tableCount) {
         logGenerated(e.time, 11, {name});
         clients.erase(name);
     } else {
@@ -91,4 +91,30 @@ void Club::onClientWait(const Event& e) {
     }
 }
 
-void Club::onClientLeave(const Event& e);
+void Club::onClientLeave(const Event& e) {
+    const auto& name = e.params[0];
+
+    if(!clients.count(name))
+        throw UnknownClientException();
+
+    auto client = clients.at(name);
+    if(client.isSeated()) {
+        int idx = client.getTable() - 1;
+        tables[idx].clear(e.time, pricePerHour);
+
+        if(!waitQ.empty()) {
+            auto next = waitQ.front();
+            waitQ.pop_front();
+            tables[idx].occupy(next, e.time);
+            clients.at(next).sit(idx+1, e.time);
+
+            logGenerated(e.time, 12, {next, std::to_string(idx+1)});
+        }
+        else if(client.isWaiting()) {
+            waitQ.erase(std::remove(waitQ.begin(), waitQ.end(), name), waitQ.end());
+            clients.at(name).leaveQueue();
+        }
+
+        clients.erase(name);
+    }
+}
