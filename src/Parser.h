@@ -17,4 +17,5 @@ public:
     TTime closeTime;
     int price;
     std::vector<Event> events;
+    
 };
