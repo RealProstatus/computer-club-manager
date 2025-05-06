@@ -37,3 +37,11 @@ class EventTimeFormatException : public ParsingException {
 public: 
     EventTimeFormatException(int line): ParsingException("TimeFormatError at line " + std::to_string(line)) {} 
 };
+class MissingConfigException : public ParsingException {
+public:
+    MissingConfigException(const std::string& field): ParsingException("Missing " + field) {}
+};
+class FileOpenException : public ParsingException {
+public:
+    FileOpenException(): ParsingException("CannotOpenFile") {}
+};
