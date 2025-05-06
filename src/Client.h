@@ -4,9 +4,10 @@
 
 class Client {
     std::string name;
+    bool inQueue;
     int tableNum;
     TTime startTime;
-    bool inQueue;
+   
 
 public:
     Client(const std::string& _name);

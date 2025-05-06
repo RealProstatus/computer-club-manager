@@ -4,10 +4,10 @@
 
 class Table {
     int number;
-    std::string curClientName;
-    TTime startTime;
     int totalMinutes;
     int totalSum;
+    std::string curClientName;
+    TTime startTime;
     
 public:
     Table(int _number);

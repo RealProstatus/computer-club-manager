@@ -1,28 +1,22 @@
 cmake_minimum_required(VERSION 3.16)
-
 project(ComputerClub LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(-Wall -Wextra -pedantic -Werror)
+endif()
 
 file(GLOB_RECURSE SRC_FILES
-    "${CMAKE_SOURCE_DIR}/src/*.cpp"
+    src/*.cpp
+    main.cpp
 )
 
-add_executable(ComputerClub
-    ${SRC_FILES}
-    ${CMAKE_SOURCE_DIR}/main.cpp
-)
+add_executable(ComputerClub ${SRC_FILES})
 
-# Устанавливаем выводимый файл в корневую папку билда (по умолчанию build/)
-set_target_properties(ComputerClub PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-)
+target_include_directories(ComputerClub PRIVATE src)
 
-add_custom_command(TARGET ComputerClub POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/input.txt
-        $<TARGET_FILE_DIR:ComputerClub>
-)
+# Копирование input.txt в выходную директорию
+configure_file(${CMAKE_SOURCE_DIR}/input.txt 
+               ${CMAKE_BINARY_DIR}/input.txt COPYONLY)
