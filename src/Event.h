@@ -30,6 +30,25 @@ struct Event {
         std::vector<std::string> p;
         std::string s;
         while (iss >> s) p.push_back(s);
+
+        switch (inp_id) {
+            case 1: // Клиент пришёл: 1 параметр (имя)
+            case 3: // Клиент ожидает: 1 параметр (имя)
+            case 4: // Клиент ушёл: 1 параметр (имя)
+                if (p.size() != 1)
+                    throw EventFormatException(lineNum);
+                break;
+
+            case 2: // Клиент сел за стол: 2 параметра (имя, №стола)
+                if (p.size() != 2)
+                    throw EventFormatException(lineNum);
+                break;
+
+            default:
+                // неизвестный ID события
+                throw EventFormatException(lineNum);
+        }
+
         return {ti, inp_id, p};
     }
 
