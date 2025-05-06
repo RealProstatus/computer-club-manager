@@ -21,4 +21,5 @@ public:
     void waitInQueue();
     void clearSeat();
     void leaveQueue();
-}
+    
+};
