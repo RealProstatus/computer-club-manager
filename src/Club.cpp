@@ -13,9 +13,16 @@ void Club::closeClub();
 
 void Club::printResults() const;
 
-void Club::logEvent(const Event& e);
+void Club::logEvent(const Event& e) {
+    eventLog.push_back(e.toString());
+}
 
-void Club::logGenerated(const TTime& t, int id, const std::vector<std::string>& params);
+void Club::logGenerated(const TTime& t, int id, const std::vector<std::string>& params) {
+    std::ostringstream oss;
+    oss << t.toString() << ' ' << id;
+    for (auto& p : params) oss << ' ' << p;
+    eventLog.push_back(oss.str());
+}
 
 void Club::onClientArrive(const Event& e);
 
