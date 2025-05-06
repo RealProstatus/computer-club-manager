@@ -5,18 +5,18 @@ Parser::Parser(const std::string& fname): fileName(fname) {}
 void Parser::parse() {
     std::ifstream in(fileName);
     if(!in)
-        throw -1;
+        throw FileOpenException();
 
     std::string line;
     int lineNum = 0;
 
     if(!std::getline(in,line))
-        throw -1;
+        throw MissingConfigException("table amount");
     lineNum++;
     tableCount = std::stoi(line);
 
     if(!std::getline(in,line))
-        throw -1;
+        throw MissingConfigException("work hours");
     lineNum++;
     {
         std::istringstream iss(line);
@@ -28,7 +28,7 @@ void Parser::parse() {
     }
 
     if(!std::getline(in,line))
-        throw -1;
+        throw MissingConfigException("price");
     lineNum++;
     price = std::stoi(line);
 
@@ -37,5 +37,5 @@ void Parser::parse() {
         if(line.empty()) continue;
         events.push_back(Event::parse(line, lineNum));
     }
-    
+
 }
