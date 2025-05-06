@@ -10,9 +10,6 @@ int main(int argc, char* argv[]) {
     try {
         Parser parser(argv[1]);
         parser.parse();
-        std::cout << "Файл успешно открыт!" << std::endl;
-
-        std::cout << parser.events.size() << std::endl;
 
         Club club(parser.tableCount, 
                 parser.openTime, 
@@ -27,11 +24,11 @@ int main(int argc, char* argv[]) {
         club.printResults();
     }
     catch(const ClubException& exc) {
-        std::cerr << exc.what() << std::endl;
+        std::cout << exc.what() << std::endl;
         return 1;
     }
     catch(const std::exception& exc) {
-        std::cerr << exc.what() << std::endl;
+        std::cout << exc.what() << std::endl;
         return 1;
     }
 
