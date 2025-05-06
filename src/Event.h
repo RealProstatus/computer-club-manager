@@ -11,7 +11,27 @@ struct Event {
     int ID;
     std::vector<std::string> params;
 
-    static Event parse(const std::string& onp, int lineNum);
+    static Event parse(const std::string& inp, int lineNum) {
+        std::istringstream iss(inp);
+        std::string inp_time;
+        int inp_id;
+
+        if(!(iss >> inp_time >> inp_id))
+            throw EventFormatException(lineNum);
+        
+        TTime ti;
+        try {
+            ti = TTime::parse(inp_time);
+        }
+        catch (const ParsingException&) {
+            throw EventTimeFormatException(lineNum);
+        }
+        //Считываем оставшиеся слова как параметры
+        std::vector<std::string> p;
+        std::string s;
+        while (iss >> s) p.push_back(s);
+        return {ti, inp_id, p};
+    }
 
     std::string toString() const {
         std::ostringstream oss;
@@ -22,5 +42,5 @@ struct Event {
 
         return oss.str();
     }
-    
+
 };
