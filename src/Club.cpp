@@ -25,23 +25,23 @@ void Club::processEvent(const Event& e) {
 
 void Club::closeClub() {
     std::vector<std::string> names;
-    names.reserve(clients.size());
-
-    for(auto& kv : clients) {
+    for (const auto& kv : clients) {
         names.push_back(kv.first);
     }
-    std::sort(names.begin(),names.end());
+    std::sort(names.begin(), names.end());
 
-    for(auto& name : names) {
+    for (const auto& name : names) {
         logGenerated(closeTime, 11, {name});
-        auto client = clients.at(name);
-        if(client.isSeated()) {
-            int idx = client.getTable() - 1;
-            tables[idx].clear(closeTime, pricePerHour);
+        if (clients.count(name)) {
+            auto& client = clients.at(name);
+            if (client.isSeated()) {
+                int idx = client.getTable() - 1;
+                tables[idx].clear(closeTime, pricePerHour);
+            }
+            clients.erase(name); // Удаляем клиента после генерации события
         }
     }
 }
-
 void Club::printResults() const {
 
     std::cout << openTime.toString() << std::endl;
@@ -110,15 +110,15 @@ void Club::onClientSit(const Event& e) {
 
 void Club::onClientWait(const Event& e) {
     const auto& name = e.params[0];
-    if(!clients.count(name)) 
+    if (!clients.count(name)) 
         throw UnknownClientException();
 
     bool anyFree = std::any_of(
         tables.begin(), tables.end(), [](auto& t){ return t.isFree(); });
-    if(anyFree) 
+    if (anyFree) 
         throw CanWaitNoLongerException();
 
-    if(waitQ.size() >= (size_t)tableCount) {
+    if (waitQ.size() >= static_cast<size_t>(tableCount)) {
         logGenerated(e.time, 11, {name});
         clients.erase(name);
     } else {
@@ -130,27 +130,33 @@ void Club::onClientWait(const Event& e) {
 void Club::onClientLeave(const Event& e) {
     const auto& name = e.params[0];
 
-    if(!clients.count(name))
+    if (!clients.count(name))
         throw UnknownClientException();
 
-    auto client = clients.at(name);
-    if(client.isSeated()) {
-        int idx = client.getTable() - 1;
-        tables[idx].clear(e.time, pricePerHour);
+    // Берём клиента по ссылке, чтобы не копировать
+    auto& client = clients.at(name);
 
-        if(!waitQ.empty()) {
+    if (client.isSeated()) {
+        int idx = client.getTable() - 1;
+        // Сначала освобождаем стол и начисляем оплату
+        tables[idx].clear(e.time, pricePerHour);
+        client.clearSeat();
+
+        // Пересадка из очереди, если есть
+        if (!waitQ.empty()) {
             auto next = waitQ.front();
             waitQ.pop_front();
             tables[idx].occupy(next, e.time);
             clients.at(next).sit(idx+1, e.time);
-
             logGenerated(e.time, 12, {next, std::to_string(idx+1)});
         }
-        else if(client.isWaiting()) {
-            waitQ.erase(std::remove(waitQ.begin(), waitQ.end(), name), waitQ.end());
-            clients.at(name).leaveQueue();
-        }
-
-        clients.erase(name);
     }
+    else if (client.isWaiting()) {
+        // Просто убираем из очереди, без оплаты
+        waitQ.erase(std::remove(waitQ.begin(), waitQ.end(), name), waitQ.end());
+    }
+
+    // В любом случае клиент уходит из клуба
+    clients.erase(name);
 }
+

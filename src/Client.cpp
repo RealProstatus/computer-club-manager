@@ -1,6 +1,6 @@
 #include"Client.h"
 
-Client::Client(const std::string& _name): name(_name), inQueue(false) {}
+Client::Client(const std::string& _name): name(_name), inQueue(false), tableNum(0) {}
 
 const std::string& Client::getName() const noexcept {
     return name;
