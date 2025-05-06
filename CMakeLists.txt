@@ -23,3 +23,9 @@ message(STATUS "Source files: ${SRC_FILES}")
 set_target_properties(ComputerClub PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
+
+add_custom_command(TARGET ComputerClub POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/input.txt
+        $<TARGET_FILE_DIR:ComputerClub>
+)
