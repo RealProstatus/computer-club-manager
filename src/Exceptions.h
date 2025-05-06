@@ -45,3 +45,30 @@ class FileOpenException : public ParsingException {
 public:
     FileOpenException(): ParsingException("CannotOpenFile") {}
 };
+
+//__________________________________________________________________
+
+class NotOpenYetException : public ClubException {
+public:
+    NotOpenYetException(): ClubException("NotOpenYet") {}
+};
+    
+class AlreadyExistsException : public ClubException {
+public:
+    AlreadyExistsException(): ClubException("YouShallNotPass") {}
+};
+    
+class UnknownClientException : public ClubException {
+public:
+    UnknownClientException(): ClubException("ClientUnknown") {}
+};
+    
+class PlaceIsBusyException : public ClubException {
+public:
+    PlaceIsBusyException(): ClubException("PlaceIsBusy") {}
+};
+    
+class CanWaitNoLongerException : public ClubException {
+public:
+    CanWaitNoLongerException(): ClubException("ICanWaitNoLonger!") {}
+};
