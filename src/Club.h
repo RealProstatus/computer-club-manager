@@ -1,8 +1,10 @@
 #pragma once
 
+#include<iostream>
 #include<map>
 #include<deque>
 #include<algorithm>
+#include<iomanip>
 
 #include"Table.h"
 #include"Client.h"

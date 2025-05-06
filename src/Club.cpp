@@ -23,9 +23,45 @@ void Club::processEvent(const Event& e) {
     }
 }
 
-void Club::closeClub();
+void Club::closeClub() {
+    std::vector<std::string> names;
+    names.reserve(clients.size());
 
-void Club::printResults() const;
+    for(auto& kv : clients) {
+        names.push_back(kv.first);
+    }
+    std::sort(names.begin(),names.end());
+
+    for(auto& name : names) {
+        logGenerated(closeTime, 11, {name});
+        auto client = clients.at(name);
+        if(client.isSeated()) {
+            int idx = client.getTable() - 1;
+            tables[idx].clear(closeTime, pricePerHour);
+        }
+    }
+}
+
+void Club::printResults() const {
+
+    std::cout << openTime.toString() << std::endl;
+
+    for(const auto& s : eventLog) 
+        std::cout << s << std::endl;
+    
+    std::cout << closeTime.toString() << std::endl;
+
+    for(const auto& table : tables) {
+        int tm = table.getTotalMinutes();
+        int h = tm / 60;
+        int m = tm % 60;
+        std::cout
+            << table.getNumber() << ' '
+            << table.getTotalSum() << ' '
+            << std::setw(2) << std::setfill('0') << h << ':'
+            << std::setw(2) << std::setfill('0') << m << std::endl;
+    }
+}
 
 void Club::logEvent(const Event& e) {
     eventLog.push_back(e.toString());
