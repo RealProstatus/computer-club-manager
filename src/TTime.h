@@ -4,11 +4,11 @@
 
 #include"Exceptions.h"
 
-struct Time {
+struct TTime {
     int hours;
     int minutes;
 
-    static Time parse(const std::string& inp) {
+    static TTime parse(const std::string& inp) {
         if(inp.size() != 5 || inp[2] != ':')
             throw BadTimeFormatException();
 
@@ -30,13 +30,14 @@ struct Time {
         return std::string(buffer);
     }
 
-    bool operator<(const Time& time) const {
+    bool operator<(const TTime& time) const {
         return this->toMinutes() < time.toMinutes();
     }
-    bool operator>(const Time& time) const {
+    bool operator>(const TTime& time) const {
         return this->toMinutes() > time.toMinutes();
     }
-    bool operator==(const Time& time) const {
+    bool operator==(const TTime& time) const {
         return this->toMinutes() == time.toMinutes();
     }
+    
 };
