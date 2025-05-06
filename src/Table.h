@@ -8,6 +8,7 @@ class Table {
     TTime startTime;
     int totalMinutes;
     int totalSum;
+    
 public:
     Table(int _number);
 
@@ -20,4 +21,5 @@ public:
 
     int getTotalMinutes() const noexcept;
     int getTotalSum() const noexcept;
+
 };
