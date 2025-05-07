@@ -2,7 +2,7 @@
 
 Программа для управления работой компьютерного клуба с учётом:
 - Учёт времени за столами
-- Обработка событий в реальном времени
+- Обработка событий
 - Расчёт выручки и статистики
 
 ## Требования
@@ -13,15 +13,19 @@
 ## Быстрый старт
 Перейдите в корневую директорию проекта
 
-Для Linux:
+### Для Linux:
+```
 mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc)
 ./ComputerClub input.txt
+```
 
-Для Windows:
+### Для Windows:
+```
 mkdir build
 cd build
 cmake -G "MinGW Makefiles" ..
 mingw32-make
 ComputerClub.exe input.txt
+```
