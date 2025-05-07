@@ -2,6 +2,8 @@
 
 Parser::Parser(const std::string& fname): fileName(fname) {}
 
+// Основной метод: читает файл построчно, обрабатывает три конфигурационные строки и затем события. 
+// Бросает FileOpenException, MissingConfigException и ParsingException. 
 void Parser::parse() {
     std::ifstream in(fileName);
     if(!in.is_open())
@@ -10,6 +12,7 @@ void Parser::parse() {
     std::string line;
     int lineNum = 0;
 
+    // Читаем число столов
     if(!std::getline(in,line))
         throw MissingConfigException("table amount");
     lineNum++;
@@ -20,11 +23,11 @@ void Parser::parse() {
         throw ParsingException("FormatError at line 1");
     }
     
-
+    // Читаем время открытия и закрытия
     if(!std::getline(in,line))
         throw MissingConfigException("work hours");
     lineNum++;
-    // разбиваем строку на токены
+    // Разбиваем строку на токены
     std::istringstream iss(line);
     std::string ot, ct;
     std::vector<std::string> tokens;
@@ -33,12 +36,12 @@ void Parser::parse() {
         tokens.push_back(tmp);
     }
 
-    // ожидаем ровно два токена: время открытия и время закрытия
+    // Ожидаем ровно два токена: время открытия и время закрытия
     if (tokens.size() != 2) {
         throw MissingConfigException("work hours");
     }
 
-    // теперь проверяем формат каждого
+    // Теперь проверяем формат каждого
     try {
         openTime  = TTime::parse(tokens[0]);
         closeTime = TTime::parse(tokens[1]);
@@ -48,6 +51,7 @@ void Parser::parse() {
         throw BadTimeValueException();
     }
 
+    // Читаем цену за час
     if(!std::getline(in,line))
         throw MissingConfigException("price");
     lineNum++;
@@ -58,7 +62,7 @@ void Parser::parse() {
         throw ParsingException("FormatError at line 3");
     }
     
-
+    // Читаем события (оставшиеся непустые строки)
     while(std::getline(in, line)) {
         lineNum++;
         if(line.empty()) continue;

@@ -4,10 +4,16 @@
 
 #include"Exceptions.h"
 
+//======================================================================================
+// Структура для хранения и операций со временем в формате HH:MM                         
+//======================================================================================
+
 struct TTime {
     int hours;
     int minutes;
 
+    // Парсит строку "HH:MM".                                                          
+    // Бросает BadTimeFormatException или BadTimeValueException при ошибке.
     static TTime parse(const std::string& inp) {
         if(inp.size() != 5 || inp[2] != ':')
             throw BadTimeFormatException();
@@ -24,6 +30,7 @@ struct TTime {
         return hours * 60 + minutes;
     }
 
+    // Форматированный вывод обратно в строку "HH:MM"
     std::string toString() const {
         char buffer[6];
         std::snprintf(buffer, sizeof(buffer), "%02d:%02d", hours, minutes);

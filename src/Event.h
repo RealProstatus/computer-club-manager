@@ -6,11 +6,17 @@
 
 #include"TTime.h"
 
+//======================================================================================
+// Структура события: хранит время, код и список параметров (имя, номер стола и т.п.)     
+//======================================================================================
+
 struct Event {
     TTime time;
     int ID;
     std::vector<std::string> params;
 
+    // Парсит строку события. Формат: "HH:MM id p1 p2 ..."                          
+    // Бросает EventFormatException или EventTimeFormatException    
     static Event parse(const std::string& inp, int lineNum) {
         std::istringstream iss(inp);
         std::string inp_time;
@@ -26,7 +32,7 @@ struct Event {
         catch (const ParsingException&) {
             throw EventTimeFormatException(lineNum);
         }
-        //Считываем оставшиеся слова как параметры
+        // Считываем оставшиеся слова как параметры
         std::vector<std::string> p;
         std::string s;
         while (iss >> s) p.push_back(s);
@@ -45,13 +51,14 @@ struct Event {
                 break;
 
             default:
-                // неизвестный ID события
+                // Неизвестный ID события
                 throw EventFormatException(lineNum);
         }
 
         return {ti, inp_id, p};
     }
 
+    // Строковое представление для лога: "HH:MM id p1 p2 ..." 
     std::string toString() const {
         std::ostringstream oss;
 

@@ -10,19 +10,26 @@
 #include"Client.h"
 #include"Event.h"
 
+//======================================================================================
+// Класс Club — оркеструет работу: хранит клиентов, столы, очередь и логику событий     
+//======================================================================================
+
 class Club {
     int tableCount;
     TTime openTime, closeTime;
     int pricePerHour;
 
-    std::map<std::string, Client> clients;
-    std::vector<Table> tables;
-    std::deque<std::string> waitQ;
-    std::vector<std::string> eventLog;
+    std::map<std::string, Client> clients;  // клиенты внутри клуба
+    std::vector<Table> tables;              // столы клуба
+    std::deque<std::string> waitQ;          // очередь
+    std::vector<std::string> eventLog;      // накопитель логов
 
+    // Логирует входящее событие
     void logEvent(const Event& e);
+    // Логирует генерируемое событие (11,12,13)
     void logGenerated(const TTime& t, int id, const std::vector<std::string>& params);
 
+    // Обработчики по типам события
     void onClientArrive(const Event& e);
     void onClientSit(const Event& e);
     void onClientWait(const Event& e);

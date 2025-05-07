@@ -16,6 +16,8 @@ void Table::occupy(const std::string& clientName, const TTime& at) {
     curClientName = clientName;
     startTime = at;
 }
+
+// Клиент освобождает стол: считаем длительность и выручку
 void Table::clear(const TTime& at, int pricePerHour) {
     int dur = at.toMinutes() - startTime.toMinutes();
     totalMinutes += dur;

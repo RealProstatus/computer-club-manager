@@ -3,10 +3,12 @@
 Club::Club(int _tableCount, const TTime& open, const TTime& close, int _pricePerHour):
     tableCount(_tableCount), openTime(open), closeTime(close), pricePerHour(_pricePerHour)
     {
+        // Создаем нужное количество столов (номера 1..N)
         for(int i = 1;i <= tableCount; i++)
             tables.emplace_back(i);
     }
 
+// Основная точка обработки: выбрасываем исключения бизнес-логики и поймаем их здесь
 void Club::processEvent(const Event& e) {
     logEvent(e);
     try {
@@ -19,10 +21,12 @@ void Club::processEvent(const Event& e) {
                 throw ClubException("UnknownEvent");
         }
     } catch (const ClubException& ex) {
+        // При любой бизнес-ошибке генерируем событие 13
         logGenerated(e.time, 13, {ex.what()});
     }
 }
 
+// Закрытие клуба: выгнать всех оставшихся клиентов
 void Club::closeClub() {
     std::vector<std::string> names;
     for (const auto& kv : clients) {
@@ -42,15 +46,17 @@ void Club::closeClub() {
         }
     }
 }
+
+// Печать результатов: открытие, события, закрытие и отчёт по столам
 void Club::printResults() const {
-
+    // Время открытия
     std::cout << openTime.toString() << std::endl;
-
+    // Лог всех событий
     for(const auto& s : eventLog) 
         std::cout << s << std::endl;
-    
+    // Время закрытия
     std::cout << closeTime.toString() << std::endl;
-
+    // Для каждого стола: номер, выручка, общее время (HH:MM)
     for(const auto& table : tables) {
         int tm = table.getTotalMinutes();
         int h = tm / 60;
@@ -63,10 +69,13 @@ void Club::printResults() const {
     }
 }
 
+
+// Логируем входящее событие: сохраняем его строковое представление
 void Club::logEvent(const Event& e) {
     eventLog.push_back(e.toString());
 }
 
+// Логируем сгенерированное событие (ID=11,12,13): формируем строку вручную
 void Club::logGenerated(const TTime& t, int id, const std::vector<std::string>& params) {
     std::ostringstream oss;
     oss << t.toString() << ' ' << id;
@@ -75,6 +84,7 @@ void Club::logGenerated(const TTime& t, int id, const std::vector<std::string>& 
     eventLog.push_back(oss.str());
 }
 
+// Обработчик: клиент приходит в клуб
 void Club::onClientArrive(const Event& e) {
     const auto& name = e.params[0];
     if(clients.count(name))
@@ -84,6 +94,7 @@ void Club::onClientArrive(const Event& e) {
     clients.emplace(name, Client(name));
 }
 
+// Обработчик: клиент садится за стол
 void Club::onClientSit(const Event& e) {
     const auto& name = e.params[0];
     int idx = std::stoi(e.params[1]) - 1;
@@ -108,6 +119,7 @@ void Club::onClientSit(const Event& e) {
     client.sit(idx+1, e.time);
 }
 
+// Обработчик: клиент встает в очередь
 void Club::onClientWait(const Event& e) {
     const auto& name = e.params[0];
     if (!clients.count(name)) 
@@ -127,6 +139,7 @@ void Club::onClientWait(const Event& e) {
     }
 }
 
+// Обработчик: клиент уходит из клуба
 void Club::onClientLeave(const Event& e) {
     const auto& name = e.params[0];
 
