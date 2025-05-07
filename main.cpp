@@ -1,5 +1,5 @@
-#include"Parser.h"
-#include"Club.h"
+#include"src/Parser.h"
+#include"src/Club.h"
 
 int main(int argc, char* argv[]) {
     if(argc != 2) {
